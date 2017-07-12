@@ -1,5 +1,9 @@
 # Amazon Web Services SDK for Salesforce Apex
 
+<a href="https://githubsfdeploy.herokuapp.com">
+  <img alt="Deploy to Salesforce" src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
+</a>
+
 The AWS SDK for Salesforce makes it easy for developers to access Amazon Web Services in their Apex code, and build robust applications and software using services like Amazon S3, Amazon EC2, etc. You can get started in minutes by [installing the package](installing the package).
 
 #### Amazon Simple Storage Service (S3) SDK
