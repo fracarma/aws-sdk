@@ -233,13 +233,13 @@
         //assert
         System.assertEquals('https', endpoint.getProtocol(), 'wrong protocol');
         System.assertEquals('bucketname.s3.us-east-1.amazonaws.com', endpoint.getHost(), 'wrong host');
-        System.assertEquals('/bucketname/path/to/file.ext', endpoint.getPath(), 'wrong path');
+        System.assertEquals('/path/to/file.ext', endpoint.getPath(), 'wrong path');
 
         System.assertEquals('AWS4-HMAC-SHA256', parameters.get('X-Amz-Algorithm'), 'wrong algorithm');
         System.assertEquals('access/20150830/us-east-1/s3/aws4_request', parameters.get('X-Amz-Credential'), 'wrong credential');
         System.assertEquals('20150830T123600Z', parameters.get('X-Amz-Date'), 'wrong date');
         System.assertEquals('86400', parameters.get('X-Amz-Expires'), 'wrong expires');
-        System.assertEquals('888d7756ffdb691bb7f12cf040455a5ba89871193a8fa666177f4cf3565ad9c5', parameters.get('X-Amz-Signature'), 'wrong signature');
+        System.assertEquals('d1f8048e80dc8fbb4343bd716e1db263f8515737f33cacb28c79fb64486f7e8e', parameters.get('X-Amz-Signature'), 'wrong signature');
         System.assertEquals('host', parameters.get('X-Amz-SignedHeaders'), 'wrong signature');
     }
 
