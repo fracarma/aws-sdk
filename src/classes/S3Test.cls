@@ -232,7 +232,7 @@
 
         //assert
         System.assertEquals('https', endpoint.getProtocol(), 'wrong protocol');
-        System.assertEquals('s3.us-east-1.amazonaws.com', endpoint.getHost(), 'wrong host');
+        System.assertEquals('bucketname.s3.us-east-1.amazonaws.com', endpoint.getHost(), 'wrong host');
         System.assertEquals('/bucketname/path/to/file.ext', endpoint.getPath(), 'wrong path');
 
         System.assertEquals('AWS4-HMAC-SHA256', parameters.get('X-Amz-Algorithm'), 'wrong algorithm');
