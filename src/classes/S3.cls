@@ -9,7 +9,8 @@
  * AwsSdk.Connector connector = new AwsSdk.Connector(accessKey, secretKey);
  *
  * String region = 'us-east-1';
- * AwsApi.S3 s3 = connector.s3(region);
+ * String baseURL = 's3.us-east-1.amazonaws.com';
+ * AwsApi.S3 s3 = connector.s3(region, baseURL);
  * List<AwsApi.S3.Content> contents = s3.bucket('bucketname').listContents(null);
  */
 public class S3 {
@@ -17,15 +18,16 @@ public class S3 {
     public class ClientException extends Exception {}
 
     Connector connector;
-    public S3(Connector connector, String region) {
+    public S3(Connector connector, String region, String baseURL) {
         this.connector = connector;
         this.connector.region = region;
         this.connector.service = 's3';
+        this.connector.baseURL = baseURL;
     }
 
     /**
      * Example usage:
-     * new AwsSdk.Connector('access', 'secret').s3('us-east-1').bucket('bucketname');
+     * new AwsSdk.Connector('access', 'secret').s3('us-east-1', 's3.us-east-1.amazonaws.com').bucket('bucketname');
      */
     public Bucket bucket(String name) {
         return new Bucket(this.connector, name);
@@ -47,15 +49,18 @@ public class S3 {
          */
         public Datetime CreationDate;
 
+        private String endpointURL;
+
         Connector connector;
         Bucket(Connector connector, String bucket) {
             this.connector = connector;
             this.Name = bucket;
+            this.endpointURL = (connector.baseURL != null) ? 'https://'+Name+'.'+connector.baseURL : 'https://s3.amazonaws.com';
         }
 
         /**
          * Example usage:
-         * new AwsSdk.Connector('access', 'secret').s3('us-east-1').bucket('bucketname').content('key');
+         * new AwsSdk.Connector('access', 'secret').s3('us-east-1', 's3.us-east-1.amazonaws.com').bucket('bucketname').content('key');
          */
         public Content content(String key) {
             return new Content(this, key);
@@ -66,11 +71,12 @@ public class S3 {
          * https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketGET.html
          */
         public List<Content> listContents(ListContentsRequest listContentsRequest) {
-            PageReference pr = new PageReference('https://s3.amazonaws.com/' + this.Name);
+            PageReference pr = new PageReference(endpointURL);
             Map<String,String> parameters = new RequestFormatter(listContentsRequest).getMap();
             pr.getParameters().putAll(parameters);
 
             Url endpoint = new Url(pr.getUrl());
+            system.debug('@@endpoint '+endpoint);
             HttpRequest request = this.connector.signedRequest('GET', endpoint, null, null, null);
             HttpResponse response = new Http().send(request);
             if (response.getStatusCode() != 200) throw new ClientException(response.getBody());
@@ -96,7 +102,7 @@ public class S3 {
          */
         public HttpResponse deleteContent(String key) {
             if (key.startsWith('/')) throw new ClientException('Keys should not lead with slash');
-            Url endpoint = new Url('https://s3.amazonaws.com/' + this.Name + '/' + key);
+            Url endpoint = new Url(endpointURL + '/' + key);
             HttpRequest request = this.connector.signedRequest('DELETE', endpoint, null, null, null);
             HttpResponse response = new Http().send(request);
             if (response.getStatusCode() != 204) throw new ClientException(response.getBody());
@@ -110,7 +116,7 @@ public class S3 {
          */
         public HttpResponse createContent(String key, Map<String,String> headers, Blob payload) {
             if (key.startsWith('/')) throw new ClientException('Keys should not lead with slash');
-            Url endpoint = new Url('https://s3.amazonaws.com/' + this.Name + '/' + key);
+            Url endpoint = new Url(endpointURL + '/' + key);
             HttpRequest request = this.connector.signedRequest('PUT', endpoint, headers, payload, null);
             HttpResponse response = new Http().send(request);
             if (response.getStatusCode() != 200) throw new ClientException(response.getBody());
@@ -166,7 +172,7 @@ public class S3 {
          */
         public HttpRequest presign() {
             String method = 'GET';
-            Url endpoint = new Url('https://s3.amazonaws.com/' + this.bucket.Name + '/' + this.Key);
+            Url endpoint = new Url(this.bucket.endpointURL + '/' + this.Key);
             Map<String,String> headers = new Map<String,String>();
             Blob payload = null;
             Boolean presign = true;

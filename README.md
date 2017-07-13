@@ -24,6 +24,10 @@ S3 is storage for the Internet. The [Apex client](https://github.com/bigassforce
     String name = 'thebucket';
     s3.createBucket(name);
 
+    If redirect from AWS, it is possibile to specify the base AWS url:
+    AwsSdk.S3 s3 = connector.s3(region, 's3.us-east-1.amazonaws.com');
+
+
 ###### Adding an object to a bucket:
 
     AwsSdk.S3.Bucket bucket = connector.s3(region).bucket('thebucket');

@@ -10,6 +10,7 @@
  *
  * String region = 'eu-east-1';
  * AwsSdk.Ec2 ec2 = connector.ec2(region);
+* String baseURL = s3.us-east-1.amazonaws.com';
  * AwsSdk.Ec2.DescribeInstancesResponse response = ec2.describeInstances(null);
  */
 public class Ec2 {
@@ -21,6 +22,7 @@ public class Ec2 {
         this.connector = connector;
         this.connector.region = region;
         this.connector.service = 'ec2';
+        this.connector.baseURL = baseURL;
     }
 
     /**

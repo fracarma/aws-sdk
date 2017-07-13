@@ -5,8 +5,8 @@
  * Example usage:
  * String key = 'XXXXXXXXXXXXXXXXXXXX';
  * String secret = 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY';
- * AwsSdk.S3 s3 = new AwsSdk.Connector(key, secret).s3('us-east-1');
- * AwsSdk.Ec2 ec2 = new AwsSdk.Connector(key, secret).ec2('us-east-1');
+ * AwsSdk.S3 s3 = new AwsSdk.Connector(key, secret).s3('us-east-1', 'https://s3.us-east-1.amazonaws.com');
+ * AwsSdk.Ec2 ec2 = new AwsSdk.Connector(key, secret).ec2('us-east-1', 'https://s3.us-east-1.amazonaws.com');
  */
 public class Connector {
 
@@ -14,6 +14,7 @@ public class Connector {
     String secretKey;
     public String service;
     public String region;
+    public String baseURL;
     @TestVisible Datetime now = Datetime.now();
 
     public Connector(String accessKeyId, String secretKey) {
@@ -21,12 +22,19 @@ public class Connector {
         this.secretKey = secretKey;
     }
 
+    public S3 s3(String region, String baseURL) {
+        return new S3(this, region, baseURL);
+    }    
+
     public S3 s3(String region) {
-        return new s3(this, region);
+        return new S3(this, region, null);
     }
 
+    public Ec2 ec2(String region, String baseURL) {
+        return new ec2(this, region, baseURL);
+    }    
     public Ec2 ec2(String region) {
-        return new ec2(this, region);
+        return new ec2(this, region, null);
     }
 
     /**
@@ -78,6 +86,8 @@ public class Connector {
             + '\n' + signedHeadersFor(headers)
             + '\n' + (presign ? 'UNSIGNED-PAYLOAD' : hexEncodedHashFor(payload))
         ;
+        system.debug('@@parameters: '+parameters);
+        system.debug('@@canonicalRequest: '+canonicalRequest);
 
         //Task 2: Create a String to Sign for Signature Version 4
         //https://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html

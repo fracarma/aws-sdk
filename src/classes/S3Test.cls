@@ -59,7 +59,7 @@
         Test.setMock(HttpCalloutMock.class, new MockListBucketsResponder());
 
         //act
-        S3 s3 = new Connector('access', 'secret').s3('us-east-1');
+        S3 s3 = new Connector('access', 'secret').s3('us-east-1', 's3.us-east-1.amazonaws.com');
         List<S3.Bucket> buckets = s3.listBuckets();
 
         //assert
@@ -81,7 +81,7 @@
         Test.setMock(HttpCalloutMock.class, new MockCreateBucketResponder());
 
         //act
-        S3 s3 = new Connector('access', 'secret').s3('us-east-1');
+        S3 s3 = new Connector('access', 'secret').s3('us-east-1', 's3.us-east-1.amazonaws.com');
         HttpResponse response = s3.createBucket('bucketname');
 
         //assert
@@ -101,7 +101,7 @@
         Test.setMock(HttpCalloutMock.class, new MockDeleteBucketResponder());
 
         //act
-        S3 s3 = new Connector('access', 'secret').s3('us-east-1');
+        S3 s3 = new Connector('access', 'secret').s3('us-east-1', 's3.us-east-1.amazonaws.com');
         HttpResponse response = s3.deleteBucket('bucketname');
 
         //assert
@@ -155,7 +155,7 @@
         Test.setMock(HttpCalloutMock.class, new MockListContentsResponder());
 
         //act
-        S3 s3 = new Connector('access', 'secret').s3('us-east-1');
+        S3 s3 = new Connector('access', 'secret').s3('us-east-1', 's3.us-east-1.amazonaws.com');
         List<S3.Content> contents = s3.bucket('bucketname').listContents(null);
 
         //assert
@@ -191,7 +191,7 @@
         Test.setMock(HttpCalloutMock.class, new MockCreateContentResponder());
 
         //act
-        S3 s3 = new Connector('access', 'secret').s3('us-east-1');
+        S3 s3 = new Connector('access', 'secret').s3('us-east-1', 's3.us-east-1.amazonaws.com');
         HttpResponse response = s3.bucket('bucketname').createContent('directory/file.txt', null, null);
 
         //assert
@@ -211,7 +211,7 @@
         Test.setMock(HttpCalloutMock.class, new MockDeleteContentResponder());
 
         //act
-        S3 s3 = new Connector('access', 'secret').s3('us-east-1');
+        S3 s3 = new Connector('access', 'secret').s3('us-east-1', 's3.us-east-1.amazonaws.com');
         HttpResponse response = s3.bucket('bucketname').deleteContent('path/to/file.ext');
 
         //assert
@@ -224,7 +224,7 @@
         connector.now = Datetime.newInstanceGmt(2015, 08, 30, 12, 36, 00);
 
         //act
-        HttpRequest request = connector.s3('us-east-1').bucket('bucketname').content('path/to/file.ext').presign();
+        HttpRequest request = connector.s3('us-east-1', 's3.us-east-1.amazonaws.com').bucket('bucketname').content('path/to/file.ext').presign();
 
         //assemble
         Url endpoint = new Url(request.getEndpoint());
@@ -232,7 +232,7 @@
 
         //assert
         System.assertEquals('https', endpoint.getProtocol(), 'wrong protocol');
-        System.assertEquals('s3.amazonaws.com', endpoint.getHost(), 'wrong host');
+        System.assertEquals('s3.us-east-1.amazonaws.com', endpoint.getHost(), 'wrong host');
         System.assertEquals('/bucketname/path/to/file.ext', endpoint.getPath(), 'wrong path');
 
         System.assertEquals('AWS4-HMAC-SHA256', parameters.get('X-Amz-Algorithm'), 'wrong algorithm');
