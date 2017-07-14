@@ -55,7 +55,7 @@ public class S3 {
         Bucket(Connector connector, String bucket) {
             this.connector = connector;
             this.Name = bucket;
-            this.endpointURL = (connector.baseURL != null) ? 'http://'+Name+'.'+connector.baseURL : 'http://s3.amazonaws.com/';
+            this.endpointURL = (connector.baseURL != null) ? 'http://'+Name+'.'+connector.baseURL+'/' : 'http://s3.amazonaws.com/';
         }
 
         /**
